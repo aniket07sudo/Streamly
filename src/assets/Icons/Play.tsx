@@ -2,9 +2,10 @@ import React from "react";
 import {Svg,Path} from "react-native-svg";
 
 
-function Icon({fill}:any) {
+function Icon({fill,...rest}:any) {
   return (
     <Svg
+    {...rest}
       width="16"
       height="16"
       fill="none"

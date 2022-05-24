@@ -7,47 +7,44 @@ import Dashboard from '../../screens/Dashboard';
 import BottomTabbar from '../BottomBar/BottomTab';
 import { HeaderStyleInterpolators, TransitionPresets } from '@react-navigation/stack';
 
-const Stack = createSharedElementStackNavigator();
 
 function Navigator(props:any) {
+  
+  const Stack = createSharedElementStackNavigator();
 
-
-
-//   React.useEffect(() => {
-//     SplashScreen.hide();
-//   }, []);
 
 
   return (
       <Stack.Navigator screenOptions={{
-          headerShown:false,
-          ...TransitionPresets.BottomSheetAndroid,
-          // headerMode:"none",
-          // animationTypeForReplace:"pop",
-          transitionSpec:{
-            open:{
-              animation:"timing",
-              config:{duration:270,delay:0,easing:Easing.out(Easing.ease)}
-            },
-            close:{
-              animation:"timing",
-              config:{duration:300,delay:0,easing:Easing.out(Easing.ease)}
-            }
+        headerShown:false,
+        ...TransitionPresets.BottomSheetAndroid,
+        // headerMode:"none",
+        // animationTypeForReplace:"pop",
+        transitionSpec:{
+          open:{
+            animation:"timing",
+            config:{duration:270,delay:0,easing:Easing.out(Easing.ease)}
           },
-          // cardStyleInterpolator:({current : { progress }}) => {
-          //   return { cardStyle : { opacity : progress } }
-          // },
-          headerStyleInterpolator:HeaderStyleInterpolators.forSlideLeft,
-          cardStyle:{
-            backgroundColor:"transparent",
-          },
-      }}>
+          close:{
+            animation:"timing",
+            config:{duration:300,delay:0,easing:Easing.out(Easing.ease)}
+          }
+        },
+        // cardStyleInterpolator:({current : { progress }}) => {
+        //   return { cardStyle : { opacity : progress } }
+        // },
+        headerStyleInterpolator:HeaderStyleInterpolators.forSlideLeft,
+        cardStyle:{
+          backgroundColor:"transparent",
+        },
+    }}  >
         <Stack.Screen name="Dashboard" component={BottomTabbar} />
-        <Stack.Screen name="MovieDetails" component={Details} sharedElements={(route) => {
+        <Stack.Screen name="MovieDetails" 
+    component={Details} sharedElements={(route) => {
             const {item} = route.params;
             return [{
               id:`image.${item.id}`,
-              animation:"move",
+              animation:'move',
               resize:"clip",
             
             },{

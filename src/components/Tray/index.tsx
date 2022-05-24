@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {View,Text,StyleSheet, ImageProps,Image,FlatList,Dimensions, TouchableNativeFeedback} from "react-native";
+import {View,Text,StyleSheet, ImageProps,Image,FlatList,Dimensions, TouchableNativeFeedback,TouchableOpacity} from "react-native";
 import {SemiBoldText} from "../../utility/Text";
 import SearchIcon from "../../assets/Icons/Star";
 import {Colors} from "../../utility/Defaults";
 import {MediumText,RegularText} from "../../utility/Text";
 // import {BlurView,VibrancyView} from "@react-native-community/blur";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import {SharedElement} from "react-navigation-shared-element";
 import { useNavigation } from "@react-navigation/core";
 

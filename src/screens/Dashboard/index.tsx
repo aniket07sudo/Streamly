@@ -1,10 +1,9 @@
 import React from "react";
-import { View,Text, StyleSheet,Image, Platform, StatusBar} from "react-native";
+import { View,Text, StyleSheet,Image, Platform, StatusBar,ScrollView} from "react-native";
 import Banner from "../../components/BannerCarousel";
 import SearchIcon from "../../assets/Icons/Search";
 import {BoldText,SemiBoldText} from "../../utility/Text";
 import Tray from "../../components/Tray";
-import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Dashboard = () => {

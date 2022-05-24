@@ -1,22 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Image, Text, StyleSheet, Dimensions, StatusBar, ScrollView } from "react-native";
+import { View, Image, Text, StyleSheet, Dimensions, StatusBar, ScrollView,TouchableOpacity } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import {SharedElement} from "react-navigation-shared-element";
 import { Colors } from "../../utility/Defaults";
 import {SemiBoldText,MediumText, RegularText} from "../../utility/Text";
 import StarIcon from "../../assets/Icons/Star";
 import BackIcon from "../../assets/Icons/Back";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HeartIcon from "../../assets/Icons/Heart"
+import ShareIcon from "../../assets/Icons/Share"
 import { RouteProp,NavigationProp } from "@react-navigation/native";
-import Animated, { interpolate, useAnimatedStyle, useSharedValue, withDelay, withTiming , SlideInUp, useAnimatedScrollHandler, Extrapolate, interpolateNode, interpolateColors, interpolateColor, Extrapolation } from "react-native-reanimated";
+import Animated, { interpolate, useAnimatedStyle, useSharedValue, withDelay, withTiming , SlideInUp, useAnimatedScrollHandler, Extrapolate, interpolateNode, interpolateColors } from "react-native-reanimated";
 import PlayIcon from "../../assets/Icons/Play";
-import { useValue,onScrollEvent} from "react-native-redash";
+import LottieView from "lottie-react-native";
+import Header from "./Header";
+import HeaderImage from "./HeaderImage";
 
 const { height,width} = Dimensions.get("window");
 const BannerHeight = height * 0.60;
-const PlayBtnHeight = 55;
+const PlayBtnHeight = 50;
 const SimilarCardWidth = (width / 3) - 17;
 const MIN_HEADER_HEIGHT = 80;
 
@@ -40,9 +42,11 @@ interface MovieDetailsProps {
 const Search = ({route,navigation,showing}:MovieDetailsProps) => {
     const {item} = route.params;
     const Padding = useSafeAreaInsets();
-    const ButtonRef = useRef<any>(null);
     const Animation = useSharedValue(0);
+    const LikeRef = useRef(null);
+    const Thumbsup = useRef(null);
     const [titleCenter,setTitleCenter] = useState(0);
+
 
     const animatedStyle = useAnimatedStyle(() => {
         const Opacity = interpolate(Animation.value,[0,1],[0,1]);
@@ -68,24 +72,6 @@ const Search = ({route,navigation,showing}:MovieDetailsProps) => {
         navigation.goBack()
     }
 
-    // const ScrollY = useValue(0);
-
-    // const TranslateY = interpolateNode(ScrollY,{
-    //     inputRange:[0,BannerHeight * 0.6],
-    //     outputRange:[BannerHeight * 0.63,0],
-    //     extrapolateRight:Extrapolate.CLAMP
-    // })
-    // const TranslateX = interpolateNode(ScrollY,{
-    //     inputRange:[0,BannerHeight * 0.72],
-    //     outputRange:[width / 2 - titleCenter,0],
-    //     extrapolate:Extrapolate.CLAMP
-    // })
-
-    // const FontSize = interpolateNode(ScrollY,{
-    //     inputRange:[0,BannerHeight * 0.72],
-    //     outputRange:[22,18],
-    //     extrapolateRight:Extrapolate.CLAMP
-    // })
     const ScrollY = useSharedValue(0);
 
 
@@ -113,19 +99,6 @@ const Search = ({route,navigation,showing}:MovieDetailsProps) => {
     
     })
 
-    // const TranslateY = interpolate(ScrollY.value,
-    //     [0,BannerHeight * 0.6],
-    //     [BannerHeight * 0.63,0],
-    //     Extrapolate.CLAMP
-    // )
-    // const TranslateX = interpolate(ScrollY.value,
-    //     [0,BannerHeight * 0.72],
-    //     [width / 2 - titleCenter,0],
-    //     Extrapolate.CLAMP
-    // )
-
-  
-
     const FontSize = useAnimatedStyle(() => {
         const fontSize = interpolate(ScrollY.value,
             [0,BannerHeight * 0.72],
@@ -141,15 +114,29 @@ const Search = ({route,navigation,showing}:MovieDetailsProps) => {
 
     const ImageHeight = useAnimatedStyle(() => {
         const Image = interpolate(ScrollY.value,
-            [-100,0],
-            [BannerHeight + 100,BannerHeight],
+            [-10,0,100],
+            [BannerHeight + 4,BannerHeight,BannerHeight - 100],
         )
-
+      
         return {
-            height:Image
+            height:Image,
         }
     
     })
+
+    const Top = useAnimatedStyle(() => {
+        
+        const Top = interpolate(ScrollY.value,
+            [0,BannerHeight],
+            [0,-BannerHeight],
+            {extrapolateRight:Extrapolate.CLAMP}
+        )
+        return {
+            top:Top
+        }
+    
+    })
+
 
     const BackgroundHead = interpolateColors(ScrollY.value,{
         inputRange:[0,BannerHeight],
@@ -159,15 +146,9 @@ const Search = ({route,navigation,showing}:MovieDetailsProps) => {
 
 
     return(
-        <View style={{flex:1,position:"relative"}}>
-            {/* <View style={[styles.imageWrapper]}>
-            <SharedElement id={`image.${item.id}`} style={{...StyleSheet.absoluteFillObject}}>
-                <Animated.Image style={[styles.imageContainer,ImageHeight]} source={require("../../assets/Banner/Aladdin.jpg")}  />
-            </SharedElement>
-            <AnimateLinearGradient  colors={['transparent', Colors.background]} style={[styles.linearGradient,animatedStyle]} />
-        </View> */}
-        <Animated.View exiting={SlideInUp} style={[styles.Head,{paddingTop:Padding.top},animatedStyle,{backgroundColor:BackgroundHead}]}>
-            <View style={styles.Back} ref={ButtonRef}>
+        <View style={{flex:1}}>
+        {/* <Animated.View exiting={SlideInUp} style={[styles.Head,{paddingTop:Padding.top},animatedStyle,{backgroundColor:BackgroundHead}]}>
+            <View style={styles.Back}>
                 <TouchableOpacity onPress={onGoBack}>
                     <BackIcon fill="white"  />
                 </TouchableOpacity>
@@ -176,26 +157,31 @@ const Search = ({route,navigation,showing}:MovieDetailsProps) => {
                 </Animated.View>
             </View>
             <View style={styles.Heart}>
-                <HeartIcon />
-                
+                <LottieView ref={LikeRef} style={{width:64,height:64}} source={require("../../assets/Lottie/like.json")} autoPlay loop />
             </View>
-        </Animated.View>
-        
-        <Animated.ScrollView scrollEventThrottle={16} 
-            onScroll={onScroll}
-            style={[styles.container,StyleSheet.absoluteFillObject]}>
-                {/* <View style={{height:BannerHeight}} /> */}
-            <View style={styles.imageOuter}>
-                
-                <View style={[styles.imageWrapper]}>
-                    <SharedElement id={`image.${item.id}`} style={{...StyleSheet.absoluteFillObject}}>
+        </Animated.View> */}
+        <Header Animation={Animation} navigation={navigation} ScrollY={ScrollY} />
+        <HeaderImage item={item} Animation={Animation} navigation={navigation} ScrollY={ScrollY} />
+        {/* <Animated.View pointerEvents="none" style={[styles.imageOuter,Top]}>
+                <Animated.View style={[styles.imageWrapper]}>
+                    <SharedElement id={`image.${item.id}`} pointerEvents="box-only" style={{...StyleSheet.absoluteFillObject}}>
                         <Animated.Image style={[styles.imageContainer,ImageHeight]} source={require("../../assets/Banner/Aladdin.jpg")}  />
                     </SharedElement>
-                    <AnimateLinearGradient  colors={['transparent', Colors.background]} style={[styles.linearGradient,animatedStyle]} />
-                </View>
+                    <AnimateLinearGradient  colors={['transparent', Colors.background]} style={[styles.linearGradient,animatedStyle,Top]} />
+                </Animated.View>
+                <View style={styles.optionsWrapper}>
+                    <View style={styles.optionsContainer}>
+                        <TouchableOpacity style={styles.btn}>
+                            <LottieView ref={Thumbsup} style={{width:50,height:50}} source={require("../../assets/Lottie/thumbs.json")} autoPlay loop />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.btn}>
+                            <ShareIcon fill="#FF8700" height={24} width={24} />
+                        </TouchableOpacity>
+                    </View>
                 <Animated.View style={[styles.playBtn,animatedStyle]}>
                         <PlayIcon fill="white" />
                     </Animated.View>
+                </View>
                 <Animated.View style={[styles.imageTextContainer,animatedStyle]}>
                     <View  style={[styles.movieDetails]}>
                         <View style={styles.tag}>
@@ -215,10 +201,16 @@ const Search = ({route,navigation,showing}:MovieDetailsProps) => {
                     </View>
                     <SharedElement style={styles.starRatingContainer} id={`rating.${item.id}`} >
                         <StarIcon fill={Colors.secondary} width="20" height="20" />
-                        <MediumText style={styles.rating}>4.2 </MediumText><MediumText style={styles.tagText}>(128 Reviews)</MediumText>
+                        <MediumText style={styles.rating}>4.2 </MediumText><MediumText style={styles.tagText}>(128 Votes)</MediumText>
                     </SharedElement>
                 </Animated.View>
-            </View>
+            </Animated.View> */}
+        
+        <Animated.ScrollView scrollEventThrottle={16} 
+            onScroll={onScroll}
+            style={[styles.container,StyleSheet.absoluteFillObject]}>
+                <View style={{height:BannerHeight}} />
+            
             <View style={styles.TextContent}>
                 <View style={styles.sectionContainer}>
                     <MediumText style={styles.heading}>The Plot</MediumText>
@@ -290,6 +282,7 @@ const Search = ({route,navigation,showing}:MovieDetailsProps) => {
                 </View>
             </View>
         </Animated.ScrollView>
+        
         </View>
     )
 }
@@ -298,7 +291,7 @@ const styles = StyleSheet.create({
     container:{
         // flex:1,
         backgroundColor:Colors.background,
-        // zIndex:1
+        // zIndex:9
     },
     Back:{
         flexDirection:"row",
@@ -312,7 +305,13 @@ const styles = StyleSheet.create({
         marginHorizontal:10
     },
     TextContent:{
-        marginTop:-PlayBtnHeight
+        marginTop:0,
+        position:"relative",
+        zIndex:10
+        // paddingVertical:30
+    },  
+    btn:{
+        marginRight:4
     },
     Head:{
         position:"absolute",
@@ -323,40 +322,46 @@ const styles = StyleSheet.create({
         alignItems:"center",
         height:MIN_HEADER_HEIGHT,
         width:"100%",
-        // backgroundColor:"red"
     },
     linearGradient:{
-        height:BannerHeight,
+        height:BannerHeight + 5,
         width,
         position:"absolute",
+        zIndex:1
     },
     imageWrapper:{
         flexDirection:"row",
         height:BannerHeight,
-        // position:"absolute",
-        zIndex:2,
-        top:0,
-        left:0,
+        // top:0,
+        // left:0,
     },
     imageContainer:{
         resizeMode:"cover",
         width,
         flex:1,
-        height:200,
-        backgroundColor:"green"
+        // height:BannerHeight,
+        position:"absolute",
+        top:0,
+        left:0,
+        
+        // zIndex:1,
+
     },
     imageOuter:{
         position:"relative",
-        // top:BannerHeight,
+        top:0,
+        left:0,
+        zIndex:2,
         // left:200,
         width:"100%",
+        overflow:"hidden"
         // zIndex:1000
         // backgroundColor:"red",
         // ...StyleSheet.absoluteFillObject
     },
     imageTextContainer:{
         // position:"absolute",
-        top:-BannerHeight * 0.21,
+        top:-BannerHeight * 0.31,
         textAlign:"center",
         width:"100%",
         zIndex:20,
@@ -429,6 +434,20 @@ const styles = StyleSheet.create({
     labelTxt:{
         color:Colors.greyText
     },
+    optionsContainer:{
+        flexDirection:"row",
+        alignItems:"center"
+    },
+    optionsWrapper:{
+        position:"relative",
+        width,
+        top:-PlayBtnHeight,
+        flexDirection:"row",
+        justifyContent:"space-between",
+        alignItems:"center",
+        paddingRight:16,
+        height:PlayBtnHeight
+    },
     playBtn:{
         width:PlayBtnHeight,
         height:PlayBtnHeight,
@@ -437,11 +456,12 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         alignItems:"center",
         justifyContent:"center",
-        position:"absolute",
-        right:20,
-        zIndex:10,
-        // top:0,
+        // position:"absolute",
+        // zIndex:10,
+        top:0,
+        right:0,
         bottom:PlayBtnHeight,
+        
         
     },
     castContainer:{

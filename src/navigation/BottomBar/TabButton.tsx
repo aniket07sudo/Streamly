@@ -1,6 +1,5 @@
 import React from "react";
-import {View,Text,StyleSheet,Image} from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import {View,Text,StyleSheet,Image,TouchableOpacity} from "react-native";
 import Animated from "react-native-reanimated";
 import HomeIcon from "../../assets/Icons/Home";
 import {MediumText} from "../../utility/Text";

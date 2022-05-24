@@ -1,7 +1,6 @@
 import { useNavigation } from "@react-navigation/core";
 import React, { useEffect, useRef, useState } from "react";
-import {View,Text, StyleSheet,ListRenderItem, ImageBackground, Dimensions, Platform} from "react-native";
-import { TouchableOpacity, TouchableWithoutFeedback } from "react-native-gesture-handler";
+import {View,Text, StyleSheet,ListRenderItem, ImageBackground, Dimensions, Platform,TouchableOpacity, TouchableWithoutFeedback} from "react-native";
 import Animated,{ Extrapolate, interpolateNode, useValue } from "react-native-reanimated";
 import PlayIcon from "../assets/Icons/Play";
 import {BoldText} from "../utility/Text";
